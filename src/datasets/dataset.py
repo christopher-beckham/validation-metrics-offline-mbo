@@ -123,16 +123,10 @@ class GenericDataset(Dataset):
         
         X = self.norm_x(X)
         y = self.norm_y(y)
-        logger.debug(
-            "  after norm              = {:.4f} {:.4f}, {}".format(
-                X.min(), X.max(), X.shape
-            )
-        )
-        logger.debug(
-            "  after norm              = {:.4f} {:.4f}, {}".format(
-                y.min(), y.max(), y.shape
-            )
-        )
+        logger.debug("  after norm              = {:.4f} {:.4f}".format(
+            X.min(), X.max()))
+        logger.debug("  after norm              = {:.4f} {:.4f}".format(
+            y.min(), y.max()))
 
         # Ensure that our normalisation and denormalisation works
         if split == "train":

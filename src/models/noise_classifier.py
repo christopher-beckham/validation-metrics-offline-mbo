@@ -86,6 +86,18 @@ class NoiseClassifier(Classifier):
         logger.info("model: {}".format(self.model))
 
         params = filter(lambda p: p.requires_grad, self.model.parameters())
+
+        if 'beta1' in optim_kwargs and 'beta2' in optim_kwargs:
+            # HACK: older experiments used a separate beta1 and beta2 whereas
+            # it should just be betas, so correct that here if that needs to
+            # be done.
+            logger.warning("beta1 and beta2 found in optim_kwargs, consolidating into betas=(beta1,beta)")
+            beta1 = optim_kwargs['beta1']
+            beta2 = optim_kwargs['beta2']
+            optim_kwargs['betas'] = (beta1, beta2)
+            del optim_kwargs['beta1']
+            del optim_kwargs['beta2']
+
         self.opt = Adam(params, **optim_kwargs)
         logger.info("optim: {}".format(self.opt))
 
@@ -100,6 +112,7 @@ class NoiseClassifier(Classifier):
 
     # TODO: This is stolen from diffusion class, but really we shouldn't have
     # duplicate code...
+    # TODO: do we need static methods?
     def setup(self, n_timesteps):
         self.betas = linear_beta_schedule(n_timesteps)
         self.n_timesteps = n_timesteps

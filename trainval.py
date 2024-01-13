@@ -10,7 +10,7 @@ from dataclasses import field, dataclass
 from omegaconf import OmegaConf as OC
 from typing import Union, List
 
-from src.models import VAE, GAN, Diffusion, Classifier, NoiseClassifier
+from src.models import Diffusion, Classifier, NoiseClassifier
 from src.fid import fid_score
 from src.datasets import get_dataset
 from exp_configs.exp_utils import unflatten
@@ -61,14 +61,15 @@ class Arguments:
     dataset: str                        = "TFBind8"
     dataset_M: int                      = 0
     gain: float                         = 1.0
-    gain_y: Union[float,None]           = None
+    gain_y: float                       = 1.0
 
     # -------------------
     # ** Network stuff **
     # -------------------
     # only applies to diffusion
     diffusion_kwargs: dict              = field(default_factory=lambda: {})
-    # NOTE: only applies to GANs!
+    
+    # NOTE: only applies to GANs! No longer used for this codebase.
     disc_kwargs: dict                   = field(default_factory=lambda: {})
     gen_kwargs: dict                    = field(default_factory=lambda: {})
 
@@ -107,7 +108,7 @@ class Arguments:
     # If set to True, eval ground truth oracle in score_on_dataset.
     # One may want to disable this in the event that evaluating the
     # ground truth oracle during train/val takes too much time.
-    eval_gt: bool                       = True
+    eval_gt: bool                       = False
     # Only monitor validation metrics after this many epochs. This was
     # created because I found that the DC metric would give insanely 
     # good values at the start of training for no good reason.
@@ -209,7 +210,8 @@ def _init_from_args(exp_dict, skip_model=False):
     )
 
     name2model = {
-        "vae": VAE, "gan": GAN, "diffusion": Diffusion,
+        #"vae": VAE, "gan": GAN, 
+        "diffusion": Diffusion,
     }
     
     model_class = name2model[exp_dict["model"]]
@@ -227,7 +229,8 @@ def _init_from_args(exp_dict, skip_model=False):
         #)
         raise NotImplementedError
     else:   
-        if model_class == GAN:
+        if model_class == "GAN":
+            """
             model = model_class(
                 gen_kwargs=exp_dict["gen_kwargs"],
                 disc_kwargs=exp_dict["disc_kwargs"],            # TODO gen_kwargs
@@ -235,31 +238,45 @@ def _init_from_args(exp_dict, skip_model=False):
                 gamma=exp_dict["gamma"],                        # TODO gan_kwargs
                 **base_kwargs
             )
-        elif model_class == VAE:
+            """
+            raise NotImplementedError("To be done later")
+        elif model_class == "VAE":
+            """
             model = model_class(
                 gen_kwargs=exp_dict["gen_kwargs"],
                 beta=exp_dict["beta"],          # TODO this needs to be a vae_kwarg
                 **base_kwargs
             )
+            """
+            raise NotImplementedError("To be done later")
         elif model_class == Diffusion:
             diffusion_kwargs = exp_dict["diffusion_kwargs"]
 
             cg_oracle = None
             if 'pretrained_cg' in diffusion_kwargs:
+                logger.debug("Found `pretrained_cg` in `diffusion_kwargs` so " + \
+                    "assume classifier guidance instead...")
+                if 'w_cg' not in diffusion_kwargs:
+                    raise ValueError("If `pretrained_cg` is defined then `w_cg` " + \
+                        "classifier guidance scale) also needs to be defined")
                 # Load the classifier guidance oracle
                 cg_exp_dict = load_json_from_file(
                     "{}/exp_dict.json".format(os.path.dirname(diffusion_kwargs["pretrained_cg"]))
                 )
-                logger.debug("Loading in classifier guidance oracle: {}, use w_cg={}".format(
+                logger.debug("Loading classifier guidance oracle: {}, use w_cg={}".format(
                     diffusion_kwargs["pretrained_cg"],
                     diffusion_kwargs["w_cg"],
                 ))
                 cg_oracle = NoiseClassifier(
+                    n_in=train_dataset.n_in,
                     model_kwargs=cg_exp_dict["model_kwargs"],
                     optim_kwargs=cg_exp_dict["optim_kwargs"],
                     **cg_exp_dict["classifier_kwargs"]
                 )
                 cg_oracle.set_state_dict(torch.load(diffusion_kwargs["pretrained_cg"]))
+                if diffusion_kwargs["tau"] != 1.0:
+                    raise ValueError("tau should be == 1 when using classifier guidance " + \
+                        "(we don't want to use labels at all)")
             
             model = model_class(
                 n_classes=diffusion_kwargs["n_classes"],
@@ -314,7 +331,7 @@ def run(exp_dict, savedir):
     # Safety here since older experiments didn't have these
     # args set.
     cls_gain = val_oracle_exp_dict.get("gain", 1.0)
-    cls_gain_y = val_oracle_exp_dict.get("gain_y", None)
+    cls_gain_y = val_oracle_exp_dict.get("gain_y", 1.0)
 
     # ----------------------------
     # Load diffusion model weights
@@ -337,6 +354,7 @@ def run(exp_dict, savedir):
     #        "Postprocess flags are inconsistent. This would cause bad "
     #        + "FID estimates since real / fake x statistics would be inconsistent"
     #    )
+    
     if cls_gain != exp_dict["gain"]:
         raise ValueError("Classifier experiment has a different gain (cls={} vs {})".\
             format(cls_gain, exp_dict["gain"]))
@@ -407,7 +425,6 @@ def run(exp_dict, savedir):
         t0 = time.time()
 
         #score_dict.update(
-        """
         model.score_on_dataset(
             dataset=valid_dataset, 
             classifier=val_oracle, 
@@ -417,7 +434,6 @@ def run(exp_dict, savedir):
             prefix="valid",
             batch_size=exp_dict["eval_batch_size"]
         )
-        """
         #)
 
         if rank == 0:
@@ -448,9 +464,11 @@ def run(exp_dict, savedir):
         score_dict.update(valid_dict)
         score_dict["time"] = time.time() - t0
 
-        if eval_every > 0 and epoch % eval_every == 0 and epoch > eval_after:
+        logger.info(
+            {k:v for k,v in score_dict.items() if k.endswith("_mean") or k=="epoch"}
+        )
 
-            logger.info(score_dict)
+        if eval_every > 0 and epoch % eval_every == 0 and epoch > eval_after:
 
             for this_dataset, this_split in [
                 (train_dataset, "train"), # training set for debugging purposes
