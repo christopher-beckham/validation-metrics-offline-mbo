@@ -4,23 +4,27 @@ METHOD=$1
 EXP_GROUP=$2
 CFG_FILE=$3
 
+USAGE_STR="bash main.sh <cls|sbgm> <experiment name> <path to json file>"
+
 if [[ $METHOD == "cls" ]]; then
   train_file="trainval_cls.py"
 elif [[ $METHOD == "sbgm" ]]; then
   train_file="trainval.py"
 else
   echo "Unknown method: choose either 'sbgm' or 'cls'!"
+  echo $USAGE_STR
   exit 1
 fi
-echo "train file: " ${train_file}
 
 if [ -z $EXP_GROUP ]; then
   echo "Must specify an experiment group name!"
+  echo $USAGE_STR
   exit 1
 fi
 
 if [ -z $CFG_FILE ]; then
   echo "Must specify a json file"
+  echo $USAGE_STR
   exit 1
 fi
 
@@ -30,9 +34,9 @@ if [ -z $SAVEDIR ]; then
 fi
 
 if [ -z "$SLURM_JOB_ID" ]; then
-  echo "$SLURM_JOB_ID not set for some reason, are you in a login node?"
-  echo "Set variable to '999999' for now"
-  SLURM_JOB_ID=999999
+  echo "SLURM_JOB_ID undefined, use Unix time instead"
+  #SLURM_JOB_ID=999999
+  SLURM_JOB_ID=`date +%s`
 fi
 
 EXP_NAME="${EXP_GROUP}/${SLURM_JOB_ID}"

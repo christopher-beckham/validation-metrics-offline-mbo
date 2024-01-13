@@ -1,0 +1,42 @@
+* Setup
+
+module load miniconda
+
+conda create --prefix ~/envs/clean_mbo python=3.9
+conda activate ~/envs/clean_mbo
+
+pip install torch==1.7.1+cu110 torchvision==0.8.2+cu110 torchaudio==0.7.2 -f https://download.pytorch.org/whl/torch_stable.html
+
+# To find specific version numbers:
+# https://github.com/brandontrabucco/design-baselines/blob/master/requirements.txt
+
+# ModuleNotFoundError: No module named 'torch.utils._pytree'
+# Seems related to a newer version of transformers not working well
+# with an older version of PyTorch (1.7.1).
+pip uninstall transformers protobuf
+pip install transformers==3.5.1 --no-deps
+pip install sacremoses==0.0.45 --no-deps
+pip install protobuf==3.17.1 --no-deps
+
+# Need to downgrade tensorflow
+pip uninstall tensorflow
+pip install tensorflow==2.5.0
+
+# design-baselines appears to use numpy==1.18
+# No wheel exists currently for py39 for numpy==1.18.5, and this env is not py38
+# It turns out I can use numpy==1.22, however then I get an issue with pandas not
+# being compatible with that version of numpy so I also need to uninstall that and 
+# install an older version of pandas. I am using --only-binary because I don't want
+# to fuck around with fixing compile errors.
+pip uninstall pandas numpy
+pip install numpy==1.22 --only-binary :all:
+pip install pandas==1.1.3 --only-binary :all:
+
+# 0.23.1 is what's in design-baselines but I got an error saying
+# top k accuracy function was not found. So I dumped it up to 0.24.
+pip install scikit-learn==0.24.1 --no-deps
+
+# OpenAI GYM for Ant, Kitty, Hopper
+pip install gym==0.12.5 
+
+pip install morphing-agents==1.5.1 --no-deps

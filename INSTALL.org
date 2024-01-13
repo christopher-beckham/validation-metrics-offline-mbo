@@ -4,14 +4,15 @@ This is an informal guide on how to install Design Bench. As of time of writing,
 
 YMMV, but here is a list of steps I took.
 
-First, setup a Conda environment. What is important is to use Python 3.8, since certain wheels (corresponding to older versions of libraries) may not exist for 3.9. Therefore, I do the following:
+First, setup a Conda environment. What is important is to use Python 3.8, since certain wheels (corresponding to older versions of libraries) /may not exist for 3.9/. Therefore, I do the following:
 
 #+BEGIN_SRC bash
-conda create --prefix ~/envs/clean_mbo python=3.9
+# MAKE SURE it's python 3.8 specifically
+conda create --prefix ~/envs/clean_mbo python=3.8
 conda activate ~/envs/clean_mbo
 #+END_SRC
 
-I'm installing PyTorch 1.7 since this is what I used at the time for this repository:
+I'm installing PyTorch 1.7 since this is what I used at the time for this project:
 
 #+BEGIN_SRC bash
 pip install torch==1.7.1+cu110 torchvision==0.8.2+cu110 torchaudio==0.7.2 -f https://download.pytorch.org/whl/torch_stable.html
