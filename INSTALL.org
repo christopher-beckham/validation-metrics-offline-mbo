@@ -1,0 +1,107 @@
+* Installing Design Bench
+
+This is an informal guide on how to install Design Bench. As of time of writing, it has a rather large and sensitive list of dependencies which need to be carefully installed. While you could just try do a =pip install= on the provided =requirements.txt= it's not guaranteed to work.
+
+YMMV, but here is a list of steps I took.
+
+First, setup a Conda environment. What is important is to use Python 3.8, since certain wheels (corresponding to older versions of libraries) may not exist for 3.9. Therefore, I do the following:
+
+#+BEGIN_SRC bash
+conda create --prefix ~/envs/clean_mbo python=3.9
+conda activate ~/envs/clean_mbo
+#+END_SRC
+
+I'm installing PyTorch 1.7 since this is what I used at the time for this repository:
+
+#+BEGIN_SRC bash
+pip install torch==1.7.1+cu110 torchvision==0.8.2+cu110 torchaudio==0.7.2 -f https://download.pytorch.org/whl/torch_stable.html
+#+END_SRC
+
+I install Design-Bench in editable mode:
+
+#+begin_src
+git clone https://github.com/brandontrabucco/design-bench
+cd design-bench
+pip install . -e
+#+end_src
+
+Now I have to do some hackery with uninstalling and installing specific libraries via pip. I am basing these decisions off of [[https://github.com/brandontrabucco/design-baselines/blob/master/requirements.txt][this]] as well as various discussions found [[https://github.com/brandontrabucco/design-bench/issues][here]]:
+
+# ModuleNotFoundError: No module named 'torch.utils._pytree'
+# Seems related to a newer version of transformers not working well
+# with an older version of PyTorch (1.7.1).
+
+#+begin_src bash
+# Note that I use --no-deps to be very strict, I don't want
+# pip to pull in subdependencies and contaminate my environment.
+pip uninstall transformers protobuf
+pip install transformers==3.5.1 --no-deps
+pip install sacremoses==0.0.45 --no-deps
+pip install protobuf==3.17.1 --no-deps
+# Need to downgrade tensorflow for tensorflow-based oracles
+pip uninstall tensorflow
+pip install tensorflow==2.5.0
+# Need older version of numpy / pandas
+# set --only-binary because I don't want to be compiling things
+pip uninstall pandas numpy
+pip install numpy==1.22 --only-binary :all:
+pip install pandas==1.1.3 --only-binary :all:
+# Scikit is needed for scikit-based oracles.
+# 0.23.1 is what's in design-baselines but I got an error saying
+# top k accuracy function was not found. So I bumped it up to 0.24.
+pip install scikit-learn==0.24.1 --no-deps
+# OpenAI GYM for Ant, Kitty, Hopper
+pip install gym==0.12.5 
+#+end_src
+
+# design-baselines appears to use numpy==1.18
+# No wheel exists currently for py39 for numpy==1.18.5, and this env is not py38
+# It turns out I can use numpy==1.22, however then I get an issue with pandas not
+# being compatible with that version of numpy so I also need to uninstall that and 
+# install an older version of pandas. I am using --only-binary because I don't want
+# to fuck around with fixing compile errors.
+
+# pip install morphing-agents==1.5.1 --no-deps
+
+That is the easy part. The harder part is satisfying the dependencies needed to get the Mujoco environments running.
+
+* Installing MujoCo
+
+Follow the instructions [[https://github.com/openai/mujoco-py][here]], which involve downloading and extracting mujoco as well as installing the key. Then export the following key to wherever the library is, e.g:
+
+#+BEGIN_SRC bash
+export MUJOCO_PY_MUJOCO_PATH=~/bin/mujoco/mujoco210 
+#+END_SRC
+
+** Compiling mujoco-py
+
+=design-baselines= appears to be using version =mujoco-py==2.0.2.3=, but I had trouble trying to install this. I could only install it by following [[https://github.com/openai/mujoco-py/issues/773][these]] instructions which suggest to do add the [[https://github.com/openai/mujoco-py/issues/773#issuecomment-1712434247][the following]] to the repository (which as of today is version =2.1.2.14=):
+
+- (1) Add a compiler directive =compiler_directives={'legacy_implicit_noexcept': True}= to the line 239 of =mujoco_py/builder.py=
+- (2) Update Cython to the latest version
+- (3) Then =pip install .= to install.
+
+(I suppose maybe one could try the same thing for the version of the Github repository corresponding to version =2.0.2.3= but I will assume for now this is not a big deal.)
+
+This worked for me so long as I exported my =LD_LIBRARY_PATH= to be the following (note that the compilation log will tell you if something is missing in this path which you need to add):
+
+#+BEGIN_SRC bash
+export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:~/bin/mujoco/mujoco210/bin:/usr/lib/nvidia
+#+END_SRC
+
+The last issue involved something to do with some missing libs which need to be installed. While this can be easily done with root privileges and =apt-get=, you can also install them with conda by following [[https://github.com/openai/mujoco-py/issues/627#issuecomment-1007658905][these instructions]]:
+
+#+BEGIN_SRC bash
+conda install -c conda-forge glew
+conda install -c conda-forge mesalib
+conda install -c menpo glfw3
+export CPATH=$CONDA_PREFIX/include
+pip install patchelf
+#+END_SRC
+
+Now install the following deps.
+
+#+BEGIN_SRC bash
+pip install morphing-agents==1.5.1 robel==0.1.2 transforms3d==0.3.1 --no-deps
+#+END_SRC
+
