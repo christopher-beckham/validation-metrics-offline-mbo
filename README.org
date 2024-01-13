@@ -1,42 +1,38 @@
-* Setup
+* Exploring validation metrics for offline model-based optimisation with diffusion models
 
-module load miniconda
+** Installation
 
-conda create --prefix ~/envs/clean_mbo python=3.9
-conda activate ~/envs/clean_mbo
+Please see =INSTALL.org=.
 
-pip install torch==1.7.1+cu110 torchvision==0.8.2+cu110 torchaudio==0.7.2 -f https://download.pytorch.org/whl/torch_stable.html
+When this is done, cd into =exps= and run =cp env.sh.bak env.sh= and modify =env.sh= to define the following environment variables. Here is an example:
 
-# To find specific version numbers:
-# https://github.com/brandontrabucco/design-baselines/blob/master/requirements.txt
+#+BEGIN_SRC bash
+export SAVEDIR=<path to store experiment checkpoints>
+export MUJOCO_PY_MUJOCO_PATH=~/bin/mujoco/mujoco210
+export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${MUJOCO_PY_MUJOCO_PATH}/bin:/usr/lib/nvidia
+#+END_SRC
 
-# ModuleNotFoundError: No module named 'torch.utils._pytree'
-# Seems related to a newer version of transformers not working well
-# with an older version of PyTorch (1.7.1).
-pip uninstall transformers protobuf
-pip install transformers==3.5.1 --no-deps
-pip install sacremoses==0.0.45 --no-deps
-pip install protobuf==3.17.1 --no-deps
+** Experiments
 
-# Need to downgrade tensorflow
-pip uninstall tensorflow
-pip install tensorflow==2.5.0
+The =exps= folder is is where experiments are launched from, and experiments are launched by invoking =main.sh=. Its usage is as follows:
 
-# design-baselines appears to use numpy==1.18
-# No wheel exists currently for py39 for numpy==1.18.5, and this env is not py38
-# It turns out I can use numpy==1.22, however then I get an issue with pandas not
-# being compatible with that version of numpy so I also need to uninstall that and 
-# install an older version of pandas. I am using --only-binary because I don't want
-# to fuck around with fixing compile errors.
-pip uninstall pandas numpy
-pip install numpy==1.22 --only-binary :all:
-pip install pandas==1.1.3 --only-binary :all:
+#+BEGIN_SRC
+# run source env.sh before running main.sh
+bash main.sh <cls|sbgm> <experiment name> <path to json file>
+#+END_SRC
 
-# 0.23.1 is what's in design-baselines but I got an error saying
-# top k accuracy function was not found. So I dumped it up to 0.24.
-pip install scikit-learn==0.24.1 --no-deps
+Let's break this down from left to right:
 
-# OpenAI GYM for Ant, Kitty, Hopper
-pip install gym==0.12.5 
+- =cls= for training a classifier (i.e. the oracle regression model), =sbgm= for diffusion model.
+- =<experiment name>= is the name of the experiment, whose directory of results and checkpoints will be stored in =$SAVEDIR/<experiment name>/<experiment id>=. The experiment ID by default is taken from =$SLURM_JOB_ID= (because that is what I use internally), but in a non-Slurm environment this will be /undefined/. Therefore the script will replace it with Unix time. (If this is not desirable you can modify the script to do something else.)
+- Experiments are defined not through a messy string of argparse arguments but instead via a JSON dictionary. You can see all the possible options by viewing the respective dataclass in =trainval.py=.
 
-pip install morphing-agents==1.5.1 --no-deps
+By default, this script will copy the code to =$SAVEDIR/<experiment name>/<experiment id>/code= and cd into that directory to run the experiment. To avoid this simply set =RUN_LOCAL=1=.
+
+** Reproduction
+
+Due to large file sizes I have only included the pretrained checkpoints for the oracles. These are needed to run the experiments defined in =exps/json= .
+
+First download the checkpoints from here: TODO.
+
+
