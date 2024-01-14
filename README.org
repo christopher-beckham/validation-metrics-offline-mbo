@@ -31,8 +31,37 @@ By default, this script will copy the code to =$SAVEDIR/<experiment name>/<exper
 
 ** Reproduction
 
-Due to large file sizes I have only included the pretrained checkpoints for the oracles. These are needed to run the experiments defined in =exps/json= .
+Due to large file sizes I have only included the pretrained checkpoints for the oracles. These are needed to run the experiments defined in =exps/json=. First download the checkpoints from [[https://drive.google.com/file/d/1RWVYLJ8RpYfJY_A5SrsmcWuXhkW-WK2B/view?usp=sharing][here]] and extract their contents to the save directory defined in =env.sh= (i.e. =$savedir=).
 
-First download the checkpoints from here: TODO.
+The following experiment configurations are available in =exps/json=:
+
+#+BEGIN_SRC
+.
+├── ant
+│   ├── train-diffusion-cfg.json
+│   ├── train-diffusion-cg.json
+│   ├── train-training-oracle.json
+│   └── train-validation-oracle.json
+├── hopper50
+│   └── train-diffusion-cfg.json
+├── kitty
+│   ├── train-diffusion-cfg.json
+│   ├── train-diffusion-cg.json
+│   ├── train-training-oracle.json
+│   └── train-validation-oracle.json
+└── sd
+    ├── HYPERPARAMETERS.org
+    ├── train-diffusion-cfg.json
+    ├── train-diffusion-cg.json
+    ├── train-training-oracle.json
+    └── train-validation-oracle.json
+#+END_SRC
+
+What the filenames signify:
+
+- =train-training-oracle.json=: only concerns classifier-based guidance experiments, this is an approximate oracle trained /only/ on the training set. However, it is also trained on the same forward distribution as the diffusion models =q(x0, ..., xT)=. In other words, they learn a regression model =p(y|x_t;t)= where =x_t= is the noised input at timestep =t=, and =y= is the reward variable.
+- =train-validation-oracle.json=: this is the validation set oracle, which is trained on both the training + validation sets. This is also the oracle which is used for the validation metrics.
+- =train-diffusion-cfg.json=: train diffusion model with classifier-free guidance. The diffusion model simultaneously learns both a noise predictor conditioned on =y= and without, and this can be used to derive a conditional score function.
+- =train-diffusion-cg.json=: train diffusion model with classifier-based guidance. This learns an unconditional score function which, when combined with the training oracle (see =train-training-oracle=) defines a conditional score function.
 
 
