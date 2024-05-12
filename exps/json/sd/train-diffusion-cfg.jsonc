@@ -1,0 +1,37 @@
+{
+  "model": "diffusion",
+  "dataset": "Superconductor",
+  "oracle": "RandomForest-v0",
+  //"postprocess": ["true"],
+  "dataset_M": 1,
+  "epochs": 5000,
+  "pretrained_oracle": "$SAVEDIR/train-cls-sd-gain1_gain-y-10-vuzeeq/bbba48f5805966b7c29e0a414e9ad71d/model.valid_loss.pth",
+  "batch_size": 128,
+
+  "eval_gt": false,
+
+  "gain": 1.0,
+  "gain_y": 10.0,
+
+  "fid_kwargs.all_features": false,
+
+  "diffusion_kwargs.n_classes": 200,
+  "diffusion_kwargs.tau": 0.1,
+  "diffusion_kwargs.w": 0.1,
+
+  "gen_kwargs.with_time_emb_y": true,
+  "gen_kwargs.dim": 256,
+  "gen_kwargs.dim_mults": [1,4,4,4],
+
+  "save_every": null,
+  "eval_every": 100,
+  "eval_after": 0,
+
+  "optim_kwargs.lr": 2e-5,
+  "optim_kwargs.weight_decay": 0.0,
+
+  "valid_metrics": ["valid_fid", "valid_agg_denorm", "valid_dsm_loss", "valid_dc", "valid_mean_score_denorm"]
+
+  //"id": [0,1,2,3,4,5]
+}
+

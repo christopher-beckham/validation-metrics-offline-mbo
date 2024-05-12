@@ -1,0 +1,38 @@
+{
+    "model": "diffusion",
+    "dataset": "AntMorphology",
+    "oracle": "Exact-v0",
+    "dataset_M": 1,
+    "epochs": 5000,
+
+    // Using my pretrained validation oracle here, but you can substitute it with your own (see README)
+    "pretrained_oracle": "$SAVEDIR/tmp100_ant_cls-uswvho/a5977eaaa082644e0c14c278c067ba1e/model.valid_loss.pth",
+    "batch_size": 128,
+    "gain": 1.0,                                // data lies in [-1, 1]
+  
+    "fid_kwargs.all_features": false,
+  
+    "diffusion_kwargs.n_classes": 200,
+
+    // MUST be == 1.0 since in classifier guidance we train an unconditional diffusion model instead.
+    "diffusion_kwargs.tau": 1.0, 
+
+    // This is not the same as the validation oracle. It differs in that it was only trained on the
+    // training set + it is trained to predict the reward from the same noisy distribution over the
+    // data just like in diffusion, e.g. q(x0, x1, ..., xT) where T is the number of timesteps.
+    "diffusion_kwargs.pretrained_cg": "$SAVEDIR/train_cls_noisy_with_timesteps_ant_training_oracle-cbxcxn/94341afac751fd3480b53d295c19cf40/model.valid_loss.pth",
+    "diffusion_kwargs.w_cg": 1.0,               // HP: classifier guidance
+  
+    "gen_kwargs.with_time_emb_y": true,
+    "gen_kwargs.dim": 128,                      // HP: base width for U-Net
+  
+    "save_every": null,
+    "eval_every": 100,
+    "eval_after": 0,
+  
+    "optim_kwargs.lr": 2e-5,
+    "optim_kwargs.weight_decay": 0.0,
+  
+    "valid_metrics": ["valid_fid", "valid_agg_denorm", "valid_dsm_loss", "valid_dc", "valid_mean_score_denorm"]
+
+  }

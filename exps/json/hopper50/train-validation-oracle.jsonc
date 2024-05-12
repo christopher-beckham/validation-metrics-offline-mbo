@@ -1,0 +1,20 @@
+{
+  // Hopper50 differs from the original dataset. Hopper's training set is == the full dataset,
+  // whereas here define the training and validation sets to be the bottom and top 50% of the
+  // full dataset.
+  "dataset": "Hopper50",
+  "oracle": "Exact-v0",
+  "epochs": 10000,
+  "mode": "train+valid",
+  "dataset_M": 50,
+  "gain": 1.0,
+  "gain_y": 10.0,
+
+  "save_every": null,
+  "eval_every": 5,
+
+  "model_kwargs.n_hidden": 256,
+  "model_kwargs.n_layers": 4,
+
+  "optim_kwargs.weight_decay": 0.0
+}

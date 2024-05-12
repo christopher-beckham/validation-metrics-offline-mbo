@@ -1,0 +1,19 @@
+{
+  "dataset": "DKittyMorphology",
+  "use_noise": true,
+  "oracle": "Exact-v0",
+  "epochs": 10000,
+  "mode": "train",
+  "dataset_M": 50,
+  "gain": 1.0,
+  "save_every": null, // do not periodically save chkpts, only save chkpt each time validation metric is beat
+  "eval_every": 10,
+  //"model_kwargs.n_in": [56],
+  "model_kwargs.n_hidden": 256,
+  "model_kwargs.n_layers": 4,
+  "optim_kwargs.weight_decay": 0.0,
+  "classifier_kwargs.n_timesteps": 200
+}
+
+
+

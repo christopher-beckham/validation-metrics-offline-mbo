@@ -1,0 +1,16 @@
+{
+  "dataset": "AntMorphology",
+  "oracle": "Exact-v0", // ground truth oracle exists
+  "epochs": 10000,
+  "mode": "train+valid+test", // we can use the full dataset here since we can test on the ground truth oracle (the simulator)
+  "dataset_M": 50,
+  "gain": 10.0,
+  "save_every": null,
+  "eval_every": 5,
+  //"model_kwargs.n_in": [60],
+  "model_kwargs.n_hidden": 64,
+  "model_kwargs.n_layers": 4,
+  "optim_kwargs.weight_decay": 0.0
+}
+
+

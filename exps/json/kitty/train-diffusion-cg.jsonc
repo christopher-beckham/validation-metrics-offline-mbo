@@ -1,0 +1,41 @@
+{
+    "model": "diffusion",
+    "dataset": "DKittyMorphology",
+    "oracle": "Exact-v0",
+
+    "dataset_M": 1,
+    "epochs": 5000,
+    // The validation oracle, the thing which has been trained on
+    // both train+valid set. Validation metrics may or may use this
+    // classifier.
+    "pretrained_oracle": "$SAVEDIR/pretrained/tmp5000_cls_dkitty-efdxjw/bd22d151de094c7a8e9736c6bd14d13a/model.valid_loss.pth",
+    "batch_size": 128,
+
+    "eval_gt": false,
+
+    "gain": 1.0,
+
+    "fid_kwargs.all_features": false,
+
+    "diffusion_kwargs.n_classes": 200,
+    "diffusion_kwargs.tau": 1.0,
+
+    // This is not the same as the validation oracle. It differs in that it was only trained on the
+    // training set + it is trained to predict the reward from the same noisy distribution over the
+    // data just like in diffusion, e.g. q(x0, x1, ..., xT) where T is the number of timesteps.
+    "diffusion_kwargs.pretrained_cg": "$SAVEDIR/pretrained/train_cls_noisy_with_timesteps_kitty_training_oracle-kvhqfu/96dced9a6a379e8dffb1a6a3fd0fe3f0/model.valid_loss.pth",
+
+    "diffusion_kwargs.w_cg": 1.0,
+
+    "gen_kwargs.with_time_emb_y": true,
+    "gen_kwargs.dim": 128,
+
+    "save_every": null,
+    "eval_every": 100,
+    "eval_after": 0,
+
+    "optim_kwargs.lr": 2e-5,
+    "optim_kwargs.weight_decay": 0.0,
+
+    "valid_metrics": ["valid_fid", "valid_agg_denorm", "valid_dsm_loss", "valid_dc", "valid_mean_score_denorm"]
+}

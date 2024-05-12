@@ -1,0 +1,28 @@
+// This is to train a 'training' oracle for classifier-based guidance
+// to be used with a diffusion model. This means two things: (1) we
+// only train on the training set (minus a small chunk of it to be used
+// as an internal validation set) and we train it over the same distribution
+// as noisy images as the diffusion model, so it is trained to predict y
+{
+  "dataset": "AntMorphology",
+  "use_noise": true,
+
+  "oracle": "Exact-v0",
+  "epochs": 10000,
+
+  "mode": "train",
+
+  "dataset_M": 50,
+  "gain": 1.0,
+
+  "save_every": null,
+  "eval_every": 10,
+
+  //"model_kwargs.n_in": [60],
+  "model_kwargs.n_hidden": 512,
+  "model_kwargs.n_layers": 2,
+
+  "optim_kwargs.weight_decay": 0.0,
+
+  "classifier_kwargs.n_timesteps": 200
+}

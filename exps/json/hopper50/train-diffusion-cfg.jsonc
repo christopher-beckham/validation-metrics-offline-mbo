@@ -1,0 +1,31 @@
+{
+    "model": "diffusion",
+    "dataset": "Hopper50",
+    "oracle": "Exact-v0",
+    "dataset_M": 5,
+    "epochs": 1000,
+    "pretrained_oracle": "$SAVEDIR/hopper50_valid_oracle/4721085/model.valid_loss.pth",
+    "batch_size": 32,
+
+    "gain": 1.0,
+    "gain_y": 10.0,
+
+    "fid_kwargs.all_features": false,
+
+    "diffusion_kwargs.n_classes": 200,
+    "diffusion_kwargs.tau": 0.1,
+    "diffusion_kwargs.w": 1.0,
+    "diffusion_kwargs.arch": "conv1d",
+
+    "gen_kwargs.with_time_emb_y": true,
+    "gen_kwargs.dim": 32,
+
+    "save_every": null,
+    "eval_every": 100,
+    "eval_after": 0,
+
+    "optim_kwargs.lr": 2e-5,
+    "optim_kwargs.weight_decay": 0.0,
+
+    "valid_metrics": ["valid_fid", "valid_agg_denorm", "valid_dsm_loss", "valid_dc", "valid_mean_score_denorm"]
+}

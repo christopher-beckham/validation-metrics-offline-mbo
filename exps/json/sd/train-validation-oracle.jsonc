@@ -1,0 +1,18 @@
+// Train validation oracle. This is for computing validation metrics
+{
+  "dataset": "Superconductor",
+  "oracle": "FullyConnected-v0", // doesn't matter
+  "epochs": 10000,
+
+  "save_every": null,
+  "eval_every": 20,
+
+  //"model_kwargs.n_in": [86],
+  "model_kwargs.n_hidden": 128,
+  "model_kwargs.n_layers": 4,
+
+  "optim_kwargs.weight_decay": 1e-4,
+  "optim_kwargs.betas": [0.0, 0.9]
+}
+
+

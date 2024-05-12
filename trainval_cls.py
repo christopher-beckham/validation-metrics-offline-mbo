@@ -167,8 +167,8 @@ def run(exp_dict, savedir):
     mode = exp_dict["mode"]
     logger.info("mode={}".format(mode))
     if mode == "train+valid+test":
-        # This should be set if there is no exact GT oracle. When there is no exact
-        # GT oracle, we should train one using the _full_ dataset.
+        # You should only use this option to train a proper "test" oracle, i.e. if
+        # there is no actual ground truth (exact) oracle which exists.
         logger.warning("Training using the full dataset, so training test oracle...")
         test_dataset = get_dataset(
             task_name=exp_dict["dataset"],
