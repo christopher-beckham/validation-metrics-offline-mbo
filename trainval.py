@@ -303,6 +303,9 @@ def run(exp_dict, savedir):
     if not os.path.exists(savedir):
         os.makedirs(savedir)
 
+    with open("{}/exp_dict.json".format(savedir), "w") as f:
+        f.write(json.dumps(exp_dict))
+
     rank = torch.cuda.current_device()
 
     datasets, model = _init_from_args(exp_dict)
@@ -425,15 +428,15 @@ def run(exp_dict, savedir):
         t0 = time.time()
 
         #score_dict.update(
-        model.score_on_dataset(
-            dataset=valid_dataset, 
-            classifier=val_oracle, 
-            fid_stats=fid_stats["train"], 
-            fid_kwargs=exp_dict["fid_kwargs"],
-            eval_gt=exp_dict["eval_gt"],
-            prefix="valid",
-            batch_size=exp_dict["eval_batch_size"]
-        )
+        #model.score_on_dataset(
+        #    dataset=valid_dataset, 
+        #    classifier=val_oracle, 
+        #    fid_stats=fid_stats["train"], 
+        #    fid_kwargs=exp_dict["fid_kwargs"],
+        #    eval_gt=exp_dict["eval_gt"],
+        #    prefix="valid",
+        #    batch_size=exp_dict["eval_batch_size"]
+        #)
         #)
 
         if rank == 0:
