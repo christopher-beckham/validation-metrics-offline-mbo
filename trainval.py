@@ -13,7 +13,7 @@ from typing import Union, List
 from src.models import Diffusion, Classifier, NoiseClassifier
 from src.fid import fid_score
 from src.datasets import get_dataset
-from exp_configs.exp_utils import unflatten
+from exp_utils import unflatten
 # from src.datasets import DuplicateDatasetMTimes
 from src.utils import (
     load_json_from_file,

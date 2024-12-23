@@ -7,7 +7,7 @@ import time
 import jstyleson as json
 import argparse
 from dataclasses import asdict, dataclass, field
-from exp_configs.exp_utils import unflatten
+from exp_utils import unflatten
 from omegaconf import OmegaConf as OC
 from src.models import Classifier, NoiseClassifier
 from src.datasets import get_dataset

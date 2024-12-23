@@ -6,7 +6,7 @@
     "epochs": 5000,
 
     // Using my pretrained validation oracle here, but you can substitute it with your own (see README)
-    "pretrained_oracle": "$SAVEDIR/tmp100_ant_cls-uswvho/a5977eaaa082644e0c14c278c067ba1e/model.valid_loss.pth",
+    "pretrained_oracle": "$SAVEDIR/pretrained/tmp100_ant_cls-uswvho/a5977eaaa082644e0c14c278c067ba1e/model.valid_loss.pth",
     "batch_size": 128,
     "gain": 1.0,                                // data lies in [-1, 1]
   
@@ -20,7 +20,7 @@
     // This is not the same as the validation oracle. It differs in that it was only trained on the
     // training set + it is trained to predict the reward from the same noisy distribution over the
     // data just like in diffusion, e.g. q(x0, x1, ..., xT) where T is the number of timesteps.
-    "diffusion_kwargs.pretrained_cg": "$SAVEDIR/train_cls_noisy_with_timesteps_ant_training_oracle-cbxcxn/94341afac751fd3480b53d295c19cf40/model.valid_loss.pth",
+    "diffusion_kwargs.pretrained_cg": "$SAVEDIR/pretrained/train_cls_noisy_with_timesteps_ant_training_oracle-cbxcxn/94341afac751fd3480b53d295c19cf40/model.valid_loss.pth",
     "diffusion_kwargs.w_cg": 1.0,               // HP: classifier guidance
   
     "gen_kwargs.with_time_emb_y": true,

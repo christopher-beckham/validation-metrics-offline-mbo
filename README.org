@@ -2,7 +2,7 @@
 
 ** Installation
 
-Please see =INSTALL.org=.
+Please see =INSTALL.org= since the installation process for Design Bench, MujoCo, etc. are pretty involved and are easy to mess up.
 
 When this is done, cd into =exps= and run =cp env.sh.bak env.sh= and modify =env.sh= to define the following environment variables. Here is an example:
 
@@ -38,23 +38,23 @@ The following experiment configurations are available in =exps/json=:
 #+BEGIN_SRC
 .
 ├── ant
-│   ├── train-diffusion-cfg.json
-│   ├── train-diffusion-cg.json
-│   ├── train-training-oracle.json
-│   └── train-validation-oracle.json
+│   ├── train-diffusion-cfg.jsonc
+│   ├── train-diffusion-cg.jsonc
+│   ├── train-training-oracle.jsonc
+│   └── train-validation-oracle.jsonc
 ├── hopper50
-│   └── train-diffusion-cfg.json
+│   └── train-diffusion-cfg.jsonc
 ├── kitty
-│   ├── train-diffusion-cfg.json
-│   ├── train-diffusion-cg.json
-│   ├── train-training-oracle.json
-│   └── train-validation-oracle.json
+│   ├── train-diffusion-cfg.jsonc
+│   ├── train-diffusion-cg.jsonc
+│   ├── train-training-oracle.jsonc
+│   └── train-validation-oracle.jsonc
 └── sd
     ├── HYPERPARAMETERS.org
-    ├── train-diffusion-cfg.json
-    ├── train-diffusion-cg.json
-    ├── train-training-oracle.json
-    └── train-validation-oracle.json
+    ├── train-diffusion-cfg.jsonc
+    ├── train-diffusion-cg.jsonc
+    ├── train-training-oracle.jsonc
+    └── train-validation-oracle.jsonc
 #+END_SRC
 
 What the filenames signify:
@@ -63,12 +63,3 @@ What the filenames signify:
 - =train-validation-oracle.json=: this is the validation set oracle, which is trained on both the training + validation sets. This is also the oracle which is used for the validation metrics.
 - =train-diffusion-cfg.json=: train diffusion model with classifier-free guidance. The diffusion model simultaneously learns both a noise predictor conditioned on =y= and without, and this can be used to derive a conditional score function.
 - =train-diffusion-cg.json=: train diffusion model with classifier-based guidance. This learns an unconditional score function which, when combined with the training oracle (see =train-training-oracle=) defines a conditional score function.
-
-** Evaluation
-
-TODO.
-
-** Misc
-
-TODO.
-

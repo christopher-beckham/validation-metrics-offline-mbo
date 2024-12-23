@@ -5,7 +5,7 @@
   //"postprocess": ["true"],
   "dataset_M": 1,
   "epochs": 5000,
-  "pretrained_oracle": "$SAVEDIR/train-cls-sd-gain1_gain-y-10-vuzeeq/bbba48f5805966b7c29e0a414e9ad71d/model.valid_loss.pth",
+  "pretrained_oracle": "$SAVEDIR/pretrained/train-cls-sd-gain1_gain-y-10-vuzeeq/bbba48f5805966b7c29e0a414e9ad71d/model.valid_loss.pth",
   "batch_size": 128,
 
   "eval_gt": false,

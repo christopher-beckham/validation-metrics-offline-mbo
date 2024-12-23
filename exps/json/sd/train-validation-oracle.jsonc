@@ -1,7 +1,7 @@
 // Train validation oracle. This is for computing validation metrics
 {
   "dataset": "Superconductor",
-  "oracle": "FullyConnected-v0", // doesn't matter
+  "oracle": "RandomForest-v0", // doesn't matter
   "epochs": 10000,
 
   "save_every": null,

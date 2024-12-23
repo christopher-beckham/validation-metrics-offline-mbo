@@ -5,7 +5,7 @@
     "dataset_M": 1,
 
     "epochs": 5000,
-    "pretrained_oracle": "$SAVEDIR/train-cls-sd-gain1_gain-y-10-vuzeeq/bbba48f5805966b7c29e0a414e9ad71d/model.valid_loss.pth",
+    "pretrained_oracle": "$SAVEDIR/pretrained/train-cls-sd-gain1_gain-y-10-vuzeeq/bbba48f5805966b7c29e0a414e9ad71d/model.valid_loss.pth",
     "batch_size": 128,
 
     "gain": 1.0,
@@ -17,7 +17,7 @@
     // MUST be == 1.0 since in classifier guidance we train an unconditional diffusion model instead.
     "diffusion_kwargs.tau": 1.0,
     "diffusion_kwargs.w_cg": 1.0,
-    "diffusion_kwargs.pretrained_cg": "$SAVEDIR/train-cls-sd_gain1-gainy10_noise-t-ehkmuo/491bfe0f7c2d8e796b75ea10d31730dd/model.valid_loss.pth",
+    "diffusion_kwargs.pretrained_cg": "$SAVEDIR/pretrained/train-cls-sd_gain1-gainy10_noise-t-ehkmuo/491bfe0f7c2d8e796b75ea10d31730dd/model.valid_loss.pth",
 
     "gen_kwargs.with_time_emb_y": true,
     "gen_kwargs.dim": 256,

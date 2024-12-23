@@ -18,10 +18,11 @@ I'm installing PyTorch 1.7 since this is what I used at the time for this projec
 pip install torch==1.7.1+cu110 torchvision==0.8.2+cu110 torchaudio==0.7.2 -f https://download.pytorch.org/whl/torch_stable.html
 #+END_SRC
 
-I install Design-Bench in editable mode:
+Now install design-bench. NOTE that as of time of writing (2024), the mainline branch of design-bench is broken due to missing links to download the datasets. We can use my branch (which is yet to be merged!):
 
 #+begin_src
 git clone https://github.com/brandontrabucco/design-bench
+git checkout chris/fixes-v2
 cd design-bench
 pip install . -e
 #+end_src
