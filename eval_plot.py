@@ -26,11 +26,14 @@ if __name__ == "__main__":
         #    help="Path to test oracle"
         #)
         parser.add_argument(
-            "--savedir", type=str, default="/mnt/home/viz/design_bench_internal/tmp"
+            "--savedir", type=str, required=True,
+        )
+        parser.add_argument(
+            "--chkpt", type=str, required=True,
+            help="Name of the checkpoint file, ending with .pth"
         )
         parser.add_argument("--datadir", type=str, default="/mnt/public/datasets")
         parser.add_argument("--use_ema", action='store_true')
-        parser.add_argument("--model", type=str, default=None)
         parser.add_argument("--seed", type=int, default=None)
         parser.add_argument("--method", type=str, default="plot")
         parser.add_argument("--method_kwargs", type=eval, default="{}")
@@ -45,4 +48,5 @@ if __name__ == "__main__":
          method=args.method,
          method_kwargs=args.method_kwargs,
          seed=args.seed, 
-         args=args)
+         args=args
+    )

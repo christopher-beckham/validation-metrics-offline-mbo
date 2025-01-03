@@ -48,7 +48,7 @@ def test_oracle(valid_loader, test_loader):
 
 
 def load_pkl(filename):
-    with open(filename, "r") as f:
+    with open(filename, "rb") as f:
         return pickle.load(f)
 
 def get_oracle_predictions(
@@ -205,22 +205,24 @@ def _run(exp_dir, savedir, method, method_kwargs, seed, args):
     print("Loading {}...".format(exp_dir))
     exp_dict = json.loads(open("{}/exp_dict.json".format(exp_dir)).read())
 
-    if args.model is not None:
+    if args.chkpt is not None:
 
         datasets, model = _init_from_args(exp_dict=exp_dict)
 
         train_dataset = datasets[0]
 
-        chk_dict = torch.load("{}/{}".format(exp_dir, args.model))
+        chk_dict = torch.load("{}/{}".format(exp_dir, args.chkpt))
         score_list = load_pkl(
             "{}/{}".format(
-                exp_dir, args.model.replace("model", "score_list").replace(".pth", ".pkl")
+                exp_dir, args.chkpt.replace("model", "score_list").replace(".pth", ".pkl")
             )
         )
         score_list = [x for x in score_list if exp_dict["valid_metrics"][0] in x]
-        logger.warning(
-            "This checkpoint was saved at EPOCH={}".format(score_list[-1]["epoch"])
-        )
+
+        if len(score_list) > 0:
+            logger.warning(
+                "This checkpoint was saved at EPOCH={}".format(score_list[-1]["epoch"])
+            )
 
         model.set_state_dict(chk_dict, strict=True)
 
@@ -229,7 +231,7 @@ def _run(exp_dir, savedir, method, method_kwargs, seed, args):
         logger.warning("Using Bprop for model class!!!")
 
         # if model is None, load in the backprop model.
-        datasets, model = _init_from_args(rank=0, exp_dict=exp_dict, skip_model = True)
+        datasets, model = _init_from_args(exp_dict=exp_dict, skip_model = True)
 
     train_dataset = datasets[0]
     valid_dataset = datasets[1]
@@ -242,13 +244,14 @@ def _run(exp_dir, savedir, method, method_kwargs, seed, args):
         "{}/exp_dict.json".format(os.path.dirname(exp_dict["pretrained_oracle"]))
     )
     cls = Classifier(
+        n_in=train_dataset.n_in,
         model_kwargs=cls_exp_dict["model_kwargs"],
         optim_kwargs=cls_exp_dict["optim_kwargs"],
     )
     cls.set_state_dict(torch.load(exp_dict["pretrained_oracle"]))
 
-    if type(model) == Bprop:
-        model.set_classifier(cls)
+    #if type(model) == Bprop:
+    #    model.set_classifier(cls)
 
     """
     logger.info("Loading pretrained test oracle...")
@@ -307,7 +310,7 @@ def _run(exp_dir, savedir, method, method_kwargs, seed, args):
             out_file = "{}/preds-bprop.{}".format(tmp_savedir, file_ext)
         else:
             out_file = "{}/preds-{}.{}".format(tmp_savedir, 
-                                               args.model.replace(".pth", ""), 
+                                               args.chkpt.replace(".pth", ""), 
                                                file_ext)
         logger.info("Saving to pkl file: {}".format(out_file))
         with open(out_file, "wb") as f:

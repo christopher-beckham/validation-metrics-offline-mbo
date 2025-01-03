@@ -61,6 +61,10 @@ class Classifier:
         rank=0,
         verbose=False,
     ):
+
+        if 'n_in' in model_kwargs:
+            model_kwargs.pop('n_in')
+        
         self.model = MLPClassifier(n_in, **model_kwargs)
         self.model.to(rank)
 
